@@ -5,14 +5,17 @@ const Button = ({ children, type}) => (
     <button type={type} className='px-4 py-2 rounded-md text-sm font-medium transition-colors cursor-pointer bg-indigo-600 text-white hover:bg-indigo-900'>{children}</button>
 );
 
-const InputField = ({ name, value, onChange, placeholder}) =>(
-    <input
-        name={name}
-        value={value}
-        onChange={onChange}
-        placeholder={placeholder}
-        className='w-full px-4 py-3 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 outline-none mb-4'
-    />
+const InputField = ({ name, value, onChange, placeholder, error}) =>(
+    <div className="mb-4">
+        <input
+            name={name}
+            value={value}
+            onChange={onChange}
+            placeholder={placeholder}
+            className='w-full px-4 py-3 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 outline-none mb-4'
+        />
+        {error && <p className="text-red-500 text-xs mt-1">{error}</p>}
+    </div>
 );
 
 function FormularzKlientow({ onSave, edytowanyKlient }){
@@ -21,15 +24,18 @@ function FormularzKlientow({ onSave, edytowanyKlient }){
         nazwa: '', 
         nip: '', 
         branza: '', 
-        osoba_kontaktowa: '', 
+        osoba_kontaktowa: '',
+        numer_telefonu: '', 
         email: '' 
     });
+
+    const [errors, setErrors] = useState({});
 
     useEffect (() => {
         if(edytowanyKlient){
             setFormData(edytowanyKlient);
         }else{
-            setFormData({nazwa: '', nip: '', branza: '', osoba_kontaktowa: '', email: ''})
+            setFormData({nazwa: '', nip: '', branza: '', osoba_kontaktowa: '', numer_telefonu: '', email: ''})
         }
     }, [edytowanyKlient]);
 
@@ -42,7 +48,37 @@ function FormularzKlientow({ onSave, edytowanyKlient }){
     
     async function handleSubmit(e){
         e.preventDefault();
-        onSave(formData);
+        console.log("Kliknięto przycisk, formData:", formData);
+        let newErrors = {};
+
+        if(!formData.nazwa.trim()) newErrors.nazwa = "Nazwa jest wymagana";
+        if(formData.nip.length !== 10) newErrors.nip = "NIP musi mieć 10 cyfr";
+
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if(!emailRegex.test(formData.email)){
+            newErrors.email = "Podaj poprawny adres email";
+        }
+
+        const phoneRegex = /^[0-9\s-]{9,12}$/;
+        if(formData.numer_telefonu.trim().length > 0 && !phoneRegex.test(formData.numer_telefonu)){
+            newErrors.numer_telefonu = "Numer telefonu jest nieprawidłowy";
+        }
+
+        if (Object.keys(newErrors).length > 0){
+            setErrors(newErrors);
+            return;
+        }
+        setErrors({});
+        await onSave(formData);
+
+        setFormData({
+            nazwa: '', 
+            nip: '', 
+            branza: '', 
+            osoba_kontaktowa: '', 
+            numer_telefonu: '', 
+            email: ''
+        });
     }
 
     return(
@@ -52,6 +88,7 @@ function FormularzKlientow({ onSave, edytowanyKlient }){
             value={formData.nazwa}
             onChange={handleChange}
             placeholder="Nazwa firmy"
+            error={errors.nazwa}
             />
 
             <InputField
@@ -59,6 +96,7 @@ function FormularzKlientow({ onSave, edytowanyKlient }){
             value={formData.nip}
             onChange={handleChange}
             placeholder="Nip firmy"
+            error={errors.nip}
             />
 
             <InputField
@@ -80,6 +118,15 @@ function FormularzKlientow({ onSave, edytowanyKlient }){
             value={formData.email}
             onChange={handleChange}
             placeholder="Email kontaktowy"
+            error={errors.email}
+            />
+
+            <InputField
+            name='numer_telefonu'
+            value={formData.numer_telefonu}
+            onChange={handleChange}
+            placeholder="Numer telefonu (opcjonalnie)"
+            error={errors.numer_telefonu}
             />
 
             <Button type="submit">Dodaj klienta</Button>

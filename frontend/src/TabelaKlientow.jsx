@@ -29,6 +29,7 @@ function TabelaKlientow({lista, onDelete, onEdit}){
             <Th>Branża</Th>
             <Th>Osoba kontaktowa</Th>
             <Th>Email</Th>
+            <Th>Numer telefonu</Th>
             <Th>Status</Th>
           </tr>
         </thead>
@@ -41,6 +42,7 @@ function TabelaKlientow({lista, onDelete, onEdit}){
               <Td>{klient.branza}</Td>
               <Td>{klient.osoba_kontaktowa}</Td>
               <Td>{klient.email}</Td>
+              <Td>{klient.numer_telefonu}</Td>
               <Td>{klient.status}</Td>
               <td>
                 <Button onClick={() => onEdit(klient)}>Edytuj</Button>
