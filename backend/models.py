@@ -10,4 +10,5 @@ class Klient(Base):
     branza=Column(String(100))
     osoba_kontaktowa=Column(String(100))
     email=Column(String(30))
+    numer_telefonu=Column(String(20))
     status=Column(String(50), default="Lead")

@@ -21,6 +21,7 @@ class KlientSchema(BaseModel):
     branza: str
     osoba_kontaktowa: str
     email: EmailStr
+    numer_telefonu: str
     status: str = "Lead"
 
 @app.post("/api/dodaj-klienta")
@@ -33,6 +34,7 @@ def dodaj_klienta(klient_dane: KlientSchema):
         branza=klient_dane.branza,
         osoba_kontaktowa=klient_dane.osoba_kontaktowa,
         email=klient_dane.email,
+        numer_telefonu=klient_dane.numer_telefonu,
         status=klient_dane.status
     )
 
@@ -72,6 +74,7 @@ def aktualizuj_klienta(klient_id: int, dane: dict):
         klient.branza = dane.get("branza", klient.branza)
         klient.osoba_kontaktowa = dane.get("osoba_kontaktowa", klient.osoba_kontaktowa)
         klient.email = dane.get("email", klient.email)
+        klient.numer_telefonu = dane.get("numer_telefonu", klient.numer_telefonu)
 
         db.commit()
         db.close()
