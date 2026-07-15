@@ -1,5 +1,20 @@
 import { useState, useEffect } from "react";
 
+
+const Button = ({ children, type}) => (
+    <button type={type} className='px-4 py-2 rounded-md text-sm font-medium transition-colors cursor-pointer bg-indigo-600 text-white hover:bg-indigo-900'>{children}</button>
+);
+
+const InputField = ({ name, value, onChange, placeholder}) =>(
+    <input
+        name={name}
+        value={value}
+        onChange={onChange}
+        placeholder={placeholder}
+        className='w-full px-4 py-3 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 outline-none mb-4'
+    />
+);
+
 function FormularzKlientow({ onSave, edytowanyKlient }){
 
     const [formData, setFormData] = useState(edytowanyKlient || {
@@ -32,42 +47,42 @@ function FormularzKlientow({ onSave, edytowanyKlient }){
 
     return(
         <form onSubmit={handleSubmit}>
-            <input
+            <InputField
             name="nazwa"
             value={formData.nazwa}
             onChange={handleChange}
             placeholder="Nazwa firmy"
             />
 
-            <input
+            <InputField
             name="nip"
             value={formData.nip}
             onChange={handleChange}
             placeholder="Nip firmy"
             />
 
-            <input
+            <InputField
             name='branza'
             value={formData.branza}
             onChange={handleChange}
             placeholder="Nazwa branży"
             />
 
-            <input
+            <InputField
             name='osoba_kontaktowa'
             value={formData.osoba_kontaktowa}
             onChange={handleChange}
             placeholder="Osoba kontaktowa"
             />
 
-            <input
+            <InputField
             name='email'
             value={formData.email}
             onChange={handleChange}
             placeholder="Email kontaktowy"
             />
 
-            <button type="submit">Dodaj klienta</button>
+            <Button type="submit">Dodaj klienta</Button>
         </form>
     )
 }
