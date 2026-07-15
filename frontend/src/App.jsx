@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import FormularzKlientow from './FormularzKlientow';
 import TabelaKlientow from './TabelaKlientow';
+import './index.css'
 
 function App() {
 
@@ -15,7 +16,7 @@ function App() {
   }, []);
 
 
-  
+
   async function downloadClientInformation(){
     const res = await fetch('http://localhost:8000/api/klienci');
     const data = await res.json()
@@ -67,17 +68,27 @@ function App() {
   }
 
   return (
-    <div>
-      <FormularzKlientow
-        onSave={handleSave}
-        edytowanyKlient={listaKlientow.find(k => k.id === edytowanyId) || null}
-      />
-
-      <TabelaKlientow
-        lista={listaKlientow}
-        onDelete={deleteClient}
-        onEdit={editClient}
-      />
+    <div className='min-h-screen bg-gray-50 py-8 px-4'>
+      <div className='max-w-6xl mx-auto space-y-8'>
+        <header className="text-center">
+          <h1 className="text-4xl font-bold text-gray-800">CRM B2B</h1>
+          <p className="text-gray-600 mt-2">Zarządzanie bazą klientów</p>
+        </header>
+        <main className='bg-white p-6 rounded-xl shadow-sm border border-gray-200'>
+          <FormularzKlientow
+            onSave={handleSave}
+            edytowanyKlient={listaKlientow.find(k => k.id === edytowanyId) || null}
+          />
+        </main>
+        <section className='text-center'>
+          <p className='text-4xl pb-4 font-bold text-gray-800'>Aktualna lista klientów</p>
+          <TabelaKlientow
+            lista={listaKlientow}
+            onDelete={deleteClient}
+            onEdit={editClient}
+          />
+        </section>
+      </div>
     </div>
   )
 }

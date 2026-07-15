@@ -1,33 +1,54 @@
+const Th = ({ children }) => (
+  <th className="px-3 py-2"> {children} </th>
+);
+
+const Td = ({ children }) => (
+  <td className="px-3 py-2 text-center"> {children} </td>
+);
+
+const Button = ({ children, onClick, color = "blue" }) => {
+  const baseClasses = 'px-4 py-2 rounded-md text-sm font-medium transition-colors cursor-pointer';
+
+  const colorClasses = color === "red" 
+  ? "bg-red-600 text-white hover:bg-red-900"
+  : "bg-indigo-600 text-white hover:bg-indigo-900";
+
+  return(
+    <button onClick={onClick} className={`${baseClasses} ${colorClasses}`}> {children} </button>
+  );
+};
+
 function TabelaKlientow({lista, onDelete, onEdit}){
     return(
-        <table>
+      <table className='min-w-full divide-y divide-gray-200'>
         <thead>
           <tr>
-            <th>ID</th>
-            <th>Nazwa firmy</th>
-            <th>NIP</th>
-            <th>Branża</th>
-            <th>Osoba kontaktowa</th>
-            <th>Email</th>
-            <th>Status</th>
+            <Th>ID</Th>
+            <Th>Nazwa firmy</Th>
+            <Th>NIP</Th>
+            <Th>Branża</Th>
+            <Th>Osoba kontaktowa</Th>
+            <Th>Email</Th>
+            <Th>Status</Th>
           </tr>
         </thead>
         <tbody>
           {lista.map((klient) => (
             <tr key={klient.id}>
-              <td>{klient.id}</td>
-              <td>{klient.nazwa}</td>
-              <td>{klient.nip}</td>
-              <td>{klient.branza}</td>
-              <td>{klient.osoba_kontaktowa}</td>
-              <td>{klient.email}</td>
-              <td>{klient.status}</td>
+              <Td>{klient.id}</Td>
+              <Td>{klient.nazwa}</Td>
+              <Td>{klient.nip}</Td>
+              <Td>{klient.branza}</Td>
+              <Td>{klient.osoba_kontaktowa}</Td>
+              <Td>{klient.email}</Td>
+              <Td>{klient.status}</Td>
               <td>
-                <button onClick={() => onDelete(klient.id)}>Usuń</button>
+                <Button onClick={() => onEdit(klient)}>Edytuj</Button>
               </td>
               <td>
-                <button onClick={() => onEdit(klient)}>Edytuj</button>
+                <Button onClick={() => onDelete(klient.id)} color="red">Usuń</Button>
               </td>
+              
             </tr>
           ))}
         </tbody>
