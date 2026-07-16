@@ -6,7 +6,7 @@ import './index.css'
 function App() {
 
   const [listaKlientow, setListaKlientow] = useState([]);
-
+  const [searchTerm, setSearchTerm] = useState("");
   const [edytowanyId, setEdytowanyId] = useState(null);
 
   useEffect(() =>{
@@ -15,6 +15,16 @@ function App() {
     .then(data => setListaKlientow(data));
   }, []);
 
+  const filteredList = listaKlientow.filter((klient) => {
+    const searchLower = searchTerm.toLowerCase();
+    return(
+      klient.nazwa.toLowerCase().includes(searchLower) ||
+      klient.nip.includes(searchLower) || 
+      klient.branza.toLowerCase().includes(searchLower) || 
+      klient.osoba_kontaktowa.toLowerCase().includes(searchLower) ||
+      klient.email.toLowerCase().includes(searchLower)
+    )
+  });
 
 
   async function downloadClientInformation(){
@@ -75,6 +85,15 @@ function App() {
           <p className="text-gray-600 mt-2">Zarządzanie bazą klientów</p>
         </header>
         <main className='bg-white p-6 rounded-xl shadow-sm border border-gray-200'>
+          <p className='p-3 text-center font-bold text-md'>Wyszukiwarka</p>
+          <input
+            type="text"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            placeholder="Szukaj firmy..."
+            className="border p-2 mb-6 w-full rounded-2xl"
+          />
+          <p className='p-3 text-center font-bold text-md'>Dodawanie klientów</p>
           <FormularzKlientow
             onSave={handleSave}
             edytowanyKlient={listaKlientow.find(k => k.id === edytowanyId) || null}
@@ -83,7 +102,7 @@ function App() {
         <section className='text-center'>
           <p className='text-4xl pb-4 font-bold text-gray-800'>Aktualna lista klientów</p>
           <TabelaKlientow
-            lista={listaKlientow}
+            lista={filteredList}
             onDelete={deleteClient}
             onEdit={editClient}
           />
