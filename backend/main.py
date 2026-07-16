@@ -1,8 +1,8 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from database import engine, SessionLocal, Base
 import models
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr, Field
 
 Base.metadata.create_all(bind=engine)
 
@@ -16,12 +16,12 @@ app.add_middleware(
 )
 
 class KlientSchema(BaseModel):
-    nazwa: str
-    nip: str
+    nazwa: str = Field(..., min_length=1)
+    nip: str = Field(..., pattern=r'^\d{10}$')
     branza: str
-    osoba_kontaktowa: str
+    osoba_kontaktowa: str = Field(..., min_length=1)
     email: EmailStr
-    numer_telefonu: str
+    numer_telefonu: str = Field(..., min_length=9, max_length=12)
     status: str = "Lead"
 
 class StatusUpdate(BaseModel):
@@ -31,8 +31,19 @@ class StatusUpdate(BaseModel):
 def dodaj_klienta(klient_dane: KlientSchema):
     db = SessionLocal()
 
+    istniejacy_klient = db.query(models.Klient).filter(
+        models.Klient.nazwa.ilike(klient_dane.nazwa.strip())
+    ).first()
+
+    if istniejacy_klient:
+        db.close()
+        raise HTTPException(
+            status_code=400,
+            detail="Klient o tej nazwie już istnieje w bazie danych"
+        )
+
     nowy_klient = models.Klient(
-        nazwa=klient_dane.nazwa,
+        nazwa=klient_dane.nazwa.strip(),
         nip=klient_dane.nip,
         branza=klient_dane.branza,
         osoba_kontaktowa=klient_dane.osoba_kontaktowa,
