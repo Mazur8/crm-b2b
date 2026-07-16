@@ -90,6 +90,10 @@ function App() {
     if(odpowiedz.ok){
       downloadClientInformation();
       setEdytowanyId(null);
+    }else{
+      const errorData = await odpowiedz.json();
+      console.log("Błędy walidacji:", errorData);
+      alert("Dane są nieprawidłowe. Sprawdź format pól.")
     }
   }
 
