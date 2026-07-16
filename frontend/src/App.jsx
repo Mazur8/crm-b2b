@@ -103,6 +103,7 @@ function App() {
         <main className='bg-white p-6 rounded-xl shadow-sm border border-gray-200'>
           <p className='p-3 text-center font-bold text-md'>Dodawanie klientów</p>
           <FormularzKlientow
+            lista={listaKlientow}
             onSave={handleSave}
             edytowanyKlient={listaKlientow.find(k => k.id === edytowanyId) || null}
             isEditing={edytowanyId !==null}

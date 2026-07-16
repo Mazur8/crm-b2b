@@ -19,7 +19,7 @@ const InputField = ({ name, value, onChange, placeholder, error}) =>(
 );
 
 
-function FormularzKlientow({ onSave, edytowanyKlient, isEditing, onCancel }){
+function FormularzKlientow({lista, onSave, edytowanyKlient, isEditing, onCancel }){
 
     const [formData, setFormData] = useState(edytowanyKlient || {
         nazwa: '', 
@@ -50,6 +50,15 @@ function FormularzKlientow({ onSave, edytowanyKlient, isEditing, onCancel }){
     async function handleSubmit(e){
         e.preventDefault();
         let newErrors = {};
+
+        if(!isEditing){
+            const czyIstnieje = lista.some(
+                (k) => k.nazwa.toLowerCase() === formData.nazwa.trim().toLowerCase()
+            );
+            if(czyIstnieje){
+                newErrors.nazwa = "Firma o takiej nazwie już istnieje w bazie!"
+            }
+        }
 
         if(!formData.nazwa.trim()) newErrors.nazwa = "Nazwa jest wymagana";
 
