@@ -18,6 +18,7 @@ const InputField = ({ name, value, onChange, placeholder, error}) =>(
     </div>
 );
 
+
 function FormularzKlientow({ onSave, edytowanyKlient }){
 
     const [formData, setFormData] = useState(edytowanyKlient || {
@@ -48,12 +49,17 @@ function FormularzKlientow({ onSave, edytowanyKlient }){
     
     async function handleSubmit(e){
         e.preventDefault();
-        console.log("Kliknięto przycisk, formData:", formData);
         let newErrors = {};
 
         if(!formData.nazwa.trim()) newErrors.nazwa = "Nazwa jest wymagana";
-        if(formData.nip.length !== 10) newErrors.nip = "NIP musi mieć 10 cyfr";
 
+        const nipRegex = /^[0-9]{10}$/
+        if(!nipRegex.test(formData.nip)) {
+            newErrors.nip = "NIP musi składać się z dokładnie 10 cyfr";
+        }
+
+        if(!formData.osoba_kontaktowa.trim()) newErrors = "Osoba kontaktowa jest wymagana";
+        
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if(!emailRegex.test(formData.email)){
             newErrors.email = "Podaj poprawny adres email";
