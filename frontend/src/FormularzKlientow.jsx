@@ -19,7 +19,7 @@ const InputField = ({ name, value, onChange, placeholder, error}) =>(
 );
 
 
-function FormularzKlientow({ onSave, edytowanyKlient }){
+function FormularzKlientow({ onSave, edytowanyKlient, isEditing, onCancel }){
 
     const [formData, setFormData] = useState(edytowanyKlient || {
         nazwa: '', 
@@ -58,8 +58,8 @@ function FormularzKlientow({ onSave, edytowanyKlient }){
             newErrors.nip = "NIP musi składać się z dokładnie 10 cyfr";
         }
 
-        if(!formData.osoba_kontaktowa.trim()) newErrors = "Osoba kontaktowa jest wymagana";
-        
+        if(!formData.osoba_kontaktowa.trim()) newErrors.osoba_kontaktowa = "Osoba kontaktowa jest wymagana";
+
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if(!emailRegex.test(formData.email)){
             newErrors.email = "Podaj poprawny adres email";
@@ -135,7 +135,18 @@ function FormularzKlientow({ onSave, edytowanyKlient }){
             error={errors.numer_telefonu}
             />
 
-            <Button type="submit">Dodaj klienta</Button>
+            <Button type="submit">
+                {isEditing ? "Zaktualizuj dane": "Dodaj klienta"}
+            </Button>
+            {isEditing && (
+                <button 
+                    type="button"
+                    onClick={onCancel}
+                    className="px-4 py-2 mx-3 rounded-md text-sm font-medium transition-colors cursor-pointer bg-gray-400 text-white hover:bg-gray-700"
+                >
+                    Anuluj
+                </button>
+            )}
         </form>
     )
 }

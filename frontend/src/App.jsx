@@ -109,6 +109,8 @@ function App() {
           <FormularzKlientow
             onSave={handleSave}
             edytowanyKlient={listaKlientow.find(k => k.id === edytowanyId) || null}
+            isEditing={edytowanyId !==null}
+            onCancel={() => setEdytowanyId(null)}
           />
         </main>
         <section className='text-center'>
