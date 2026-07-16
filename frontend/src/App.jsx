@@ -55,6 +55,18 @@ function App() {
     setEdytowanyId(klient.id)
   }
 
+  async function updateStatus(id, newStatus) {
+    const res = await fetch(`http://localhost:8000/api/klienci/${id}/status`,{
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json'},
+      body: JSON.stringify({ status: newStatus })
+    });
+
+    if(res.ok){
+      downloadClientInformation();
+    }
+  }
+
   async function handleSave(formData){
     const isEditing = edytowanyId !==null;
     const url = isEditing 
@@ -105,6 +117,7 @@ function App() {
             lista={filteredList}
             onDelete={deleteClient}
             onEdit={editClient}
+            onStatusChange={updateStatus}
           />
         </section>
       </div>

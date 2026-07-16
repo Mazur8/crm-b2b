@@ -18,7 +18,7 @@ const Button = ({ children, onClick, color = "blue" }) => {
   );
 };
 
-function TabelaKlientow({lista, onDelete, onEdit}){
+function TabelaKlientow({lista, onDelete, onEdit, onStatusChange}){
     return(
       <table className='min-w-full divide-y divide-gray-200'>
         <thead>
@@ -43,7 +43,18 @@ function TabelaKlientow({lista, onDelete, onEdit}){
               <Td>{klient.osoba_kontaktowa}</Td>
               <Td>{klient.email}</Td>
               <Td>{klient.numer_telefonu}</Td>
-              <Td>{klient.status}</Td>
+              <Td>
+                <select
+                  value={klient.status}
+                  onChange={(e) => onStatusChange(klient.id, e.target.value)}
+                  className="border rounded p-1 w-full"
+                >
+                  <option value="Lead">Lead</option>
+                  <option value="W kontakcie">W kontakcie</option>
+                  <option value="Wygrana">Wygrana</option>
+                  <option value="Przegrana">Przegrana</option>
+                </select>
+              </Td>
               <td>
                 <Button onClick={() => onEdit(klient)}>Edytuj</Button>
               </td>
