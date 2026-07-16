@@ -24,6 +24,9 @@ class KlientSchema(BaseModel):
     numer_telefonu: str
     status: str = "Lead"
 
+class StatusUpdate(BaseModel):
+    status: str
+
 @app.post("/api/dodaj-klienta")
 def dodaj_klienta(klient_dane: KlientSchema):
     db = SessionLocal()
@@ -52,6 +55,19 @@ def pobierz_klientow():
     db.close()
     return klienci
 
+@app.patch("/api/klienci/{klient_id}/status")
+def aktualizuj_status(klient_id: int, dane: StatusUpdate):
+    db=SessionLocal()
+    klient = db.query(models.Klient).filter(models.Klient.id == klient_id).first()
+    if klient:
+        klient.status = dane.status
+
+        db.commit()
+        db.close()
+        return {"status":"zmieniono status"}
+    db.close()
+    return {"status":"nie znaleziono klienta"}
+
 @app.delete("/api/klienci/{klient_id}")
 def usun_klienta(klient_id: int):
     db = SessionLocal()
@@ -78,7 +94,7 @@ def aktualizuj_klienta(klient_id: int, dane: dict):
 
         db.commit()
         db.close()
-        return {"status":"zaktualizowano"}
+        return {"status":"zaktualizowano klienta"}
     
     db.close()
     return {"status":"nie znaleziono"}
