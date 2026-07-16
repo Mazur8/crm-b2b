@@ -8,6 +8,7 @@ function App() {
   const [listaKlientow, setListaKlientow] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [edytowanyId, setEdytowanyId] = useState(null);
+  const [statusFilter, setStatusFilter] = useState("All");
 
   useEffect(() =>{
     fetch('http://localhost:8000/api/klienci')
@@ -17,13 +18,16 @@ function App() {
 
   const filteredList = listaKlientow.filter((klient) => {
     const searchLower = searchTerm.toLowerCase();
-    return(
+    const matchesSearch =
       klient.nazwa.toLowerCase().includes(searchLower) ||
       klient.nip.includes(searchLower) || 
       klient.branza.toLowerCase().includes(searchLower) || 
       klient.osoba_kontaktowa.toLowerCase().includes(searchLower) ||
-      klient.email.toLowerCase().includes(searchLower)
-    )
+      klient.email.toLowerCase().includes(searchLower);
+    
+    const matchesStatus = statusFilter ==="All" || klient.status ===statusFilter;
+
+    return matchesSearch && matchesStatus;
   });
 
 
@@ -97,14 +101,6 @@ function App() {
           <p className="text-gray-600 mt-2">Zarządzanie bazą klientów</p>
         </header>
         <main className='bg-white p-6 rounded-xl shadow-sm border border-gray-200'>
-          <p className='p-3 text-center font-bold text-md'>Wyszukiwarka</p>
-          <input
-            type="text"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            placeholder="Szukaj firmy..."
-            className="border p-2 mb-6 w-full rounded-2xl"
-          />
           <p className='p-3 text-center font-bold text-md'>Dodawanie klientów</p>
           <FormularzKlientow
             onSave={handleSave}
@@ -115,6 +111,28 @@ function App() {
         </main>
         <section className='text-center'>
           <p className='text-4xl pb-4 font-bold text-gray-800'>Aktualna lista klientów</p>
+          <div className='flex gap-2 justify-center mb-6'>
+            {["All", "Lead", "W kontakcie", "Wygrana", "Przegrana"].map((s)=> (
+              <button
+                key={s}
+                onClick={()=>setStatusFilter(s)}
+                className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+                  statusFilter === s
+                  ? "bg-indigo-600 text-white"
+                  : "bg-gray-200 text-gray-700 hover:bg-gray-300 cursor-pointer"
+                }`}
+              >
+                {s}
+              </button>
+            ))}
+          </div>
+          <input
+            type="text"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            placeholder="Szukaj firmy..."
+            className="border p-2 mb-6 w-full rounded-2xl"
+          />
           <TabelaKlientow
             lista={filteredList}
             onDelete={deleteClient}
