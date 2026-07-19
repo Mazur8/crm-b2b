@@ -2,7 +2,8 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from database import engine, SessionLocal, Base
 import models
-from pydantic import BaseModel, EmailStr, Field
+from pydantic import BaseModel, EmailStr, Field, field_validator
+from typing import Optional
 
 Base.metadata.create_all(bind=engine)
 
@@ -16,13 +17,19 @@ app.add_middleware(
 )
 
 class KlientSchema(BaseModel):
-    nazwa: str = Field(..., min_length=1)
+    nazwa: str = Field(...)
     nip: str = Field(..., pattern=r'^\d{10}$')
     branza: str
-    osoba_kontaktowa: str = Field(..., min_length=1)
+    osoba_kontaktowa: str = Field(...)
     email: EmailStr
-    numer_telefonu: str = Field(..., min_length=9, max_length=12)
+    numer_telefonu: Optional[str] = Field(None, min_length=9, max_length=12)
     status: str = "Lead"
+
+    @field_validator('numer_telefonu', mode='before')
+    def zamien_pusty_string_na_none(cls, v):
+        if v == "":
+            return None
+        return v
 
 class StatusUpdate(BaseModel):
     status: str
