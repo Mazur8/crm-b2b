@@ -9,6 +9,7 @@ function App() {
   const [searchTerm, setSearchTerm] = useState("");
   const [edytowanyId, setEdytowanyId] = useState(null);
   const [statusFilter, setStatusFilter] = useState("All");
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() =>{
     fetch('http://localhost:8000/api/klienci')
@@ -39,19 +40,25 @@ function App() {
 
   async function deleteClient(id){
     const decision = confirm("Czy na pewno chcesz usunąć?");
+    try{
+      if(decision){
+        setIsLoading(true);
+        const odpowiedz = await fetch(`http://localhost:8000/api/klienci/${id}`, {
+          method: 'DELETE'
+        });
 
-    if(decision){
-      const odpowiedz = await fetch(`http://localhost:8000/api/klienci/${id}`, {
-        method: 'DELETE'
-      });
-
-      if (odpowiedz.ok){
-        downloadClientInformation();
+        if (odpowiedz.ok){
+          await downloadClientInformation();
+        }
+        console.log("Usunięto");
       }
-      console.log("Usunięto");
-    }
-    else{
-      console.log("Anulowano");
+      else{
+        console.log("Anulowano");
+      }
+    } catch(error){
+      console.error("Błąd: ", error);
+    } finally {
+      setIsLoading(false);
     }
   }
 
@@ -60,40 +67,53 @@ function App() {
   }
 
   async function updateStatus(id, newStatus) {
-    const res = await fetch(`http://localhost:8000/api/klienci/${id}/status`,{
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json'},
-      body: JSON.stringify({ status: newStatus })
-    });
+    setIsLoading(true);
+    try{
+      const res = await fetch(`http://localhost:8000/api/klienci/${id}/status`,{
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json'},
+        body: JSON.stringify({ status: newStatus })
+      });
 
-    if(res.ok){
-      downloadClientInformation();
+      if(res.ok){
+        await downloadClientInformation();
+      }
+    } catch (error){
+      console.error("Błąd: ", error);
+    } finally {
+      setIsLoading(false);
     }
   }
 
   async function handleSave(formData){
-    const isEditing = edytowanyId !==null;
-    const url = isEditing 
-    ? `http://localhost:8000/api/klienci/${edytowanyId}` 
-    : 'http://localhost:8000/api/dodaj-klienta';
-    
-    const method = isEditing ? 'PUT' : 'POST'
-    
-    const odpowiedz = await fetch(url, {
-    method: method,
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify(formData)
-    });
+    try{
+      setIsLoading(true);
+      const isEditing = edytowanyId !==null;
+      const url = isEditing 
+      ? `http://localhost:8000/api/klienci/${edytowanyId}` 
+      : 'http://localhost:8000/api/dodaj-klienta';
+      
+      const method = isEditing ? 'PUT' : 'POST'
+      const odpowiedz = await fetch(url, {
+      method: method,
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(formData)
+      });
 
-    if(odpowiedz.ok){
-      downloadClientInformation();
-      setEdytowanyId(null);
-    }else{
-      const errorData = await odpowiedz.json();
-      console.log("Błędy walidacji:", errorData);
-      alert("Dane są nieprawidłowe. Sprawdź format pól.")
+      if(odpowiedz.ok){
+        await downloadClientInformation();
+        setEdytowanyId(null);
+      }else{
+        const errorData = await odpowiedz.json();
+        console.log("Błędy walidacji:", errorData);
+        alert("Dane są nieprawidłowe. Sprawdź format pól.")
+      }
+    } catch (error){
+      console.error("Błąd: ", error);
+    } finally{
+      setIsLoading(false);
     }
   }
 
@@ -138,12 +158,16 @@ function App() {
             placeholder="Szukaj firmy..."
             className="border p-2 mb-6 w-full rounded-2xl"
           />
+          {isLoading ? (
+            <p>Ładowanie danych...</p>
+          ) : (
           <TabelaKlientow
             lista={filteredList}
             onDelete={deleteClient}
             onEdit={editClient}
             onStatusChange={updateStatus}
           />
+          )}
         </section>
       </div>
     </div>
